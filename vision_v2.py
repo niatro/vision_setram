@@ -6,6 +6,7 @@ import time
 import pandas as pd
 import shutil
 from dotenv import load_dotenv
+from prompt import prompt
 
 load_dotenv()
 
@@ -28,7 +29,7 @@ def describe_image_with_gpt4(image_path, data_records):
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": "Devuelve un documento JSON con datos. Sólo devuelve JSON, no otro texto. Actúa como un experto en seguridad vial y tránsito, tu objetivo es hacer un inventario vial describiendo los siguientes campos:  \"Latitud\" (Donde el formato tendrá esta forma:  S20 59.5334),  \"Longitud\" (Donde el formato tendrá esta forma: W68 50.5161), \"Altitud\", \"Velocidad\", \"Fecha\", \"Señalización vial\": donde se describa en detalle los símbolos viales que se observan al costado del camino, \"Eventos en ruta\": Donde se describa en detalle cualquier acontecimiento anormal dentro del camino (personas trabajando, vehiculo detenido, animales en la ruta, etc), \"Estado del camino\": Describe en detalle paso a paso el estado del camino por donde transita el vehículo utiliza  (como prescencia pavimento, hoyos en el camino, calamina, carpeta rodada, piedras sueltas, irregularidades, etc), \"Tipo de superficie\": Donde señalaras sie es camino de ripio, de tierra, asfalto etc., \"Descripción del entorno\": Donde tendras que descrbir en entorno por donde transita el vehículo (Por ejemplo, montañas nevadas a la drecha, una caseta de madera abandonada a la izquierda un pozo en buen estado a la derecha, etc) y finalmente el campo \"Curvas\": Donde señalaras si el camino es recto, si tiene curvas cerradas, si tiene curvas abiertas, si tiene curvas en S, etc. Si no hubiese información en los campos que te he descrito  simplemente escribe \"No se observa\").  No agregues campos adicionales a los que te he señalado"},
+                        {"type": "text", "text": prompt},
                         {"type": "image_url", "image_url": {"url": image_url}}
                     ],
                 }
