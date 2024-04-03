@@ -1,2 +1,7 @@
 # Ignorar archivo .env
+<<<<<<< HEAD
 .env
+=======
+.env
+.DS_Store
+>>>>>>> master
