@@ -1,36 +1,146 @@
 # prompt.py
 
 prompt = """
-Devuelve un documento JSON con datos. Sólo devuelve JSON, no otro texto. Actúa como un experto en seguridad vial y tránsito, tu objetivo es hacer un inventario vial describiendo los siguientes campos:  \"Latitud\" (Donde el formato tendrá esta forma:  S20 59.5334),  \"Longitud\" (Donde el formato tendrá esta forma: W68 50.5161), \"Altitud\", \"Velocidad\", \"Fecha\", \"Señalización vial\": donde se describa en detalle los símbolos viales que se observan al costado del camino (Si el símbolo vial esta lejano, más alla de 5 metros no lo describas), \"Eventos en ruta\": Donde se describa en detalle y paso a paso cualquier acontecimiento anormal dentro del camino, incluye en esta descripcíon una explicación de porque estaría ocurriendo el evento en particular (personas trabajando por reparación del camino debido a puente roto, vehículo detenido por choque en la carretera, animales en la ruta por cruce de ganadero por el camino, etc), \"Estado del camino\": Describe en detalle paso a paso el estado del camino por donde transita el vehículo utiliza  (como presencia pavimento, hoyos en el camino, calamina, carpeta rodada, piedras sueltas, irregularidades, etc), \"Tipo de superficie\": Donde señalaras si es camino de ripio, de tierra, asfalto etc., \"Descripción del entorno\": Donde tendrás que describir estructuras hechas por el hombre en el entorno por donde transita el vehículo (Por ejemplo, una caseta de madera abandonada a la izquierda, un pozo en buen estado a la derecha, una torre de alta tensión al fondo, etc) y finalmente el campo \"Curvas\": Donde señalaras si el camino es recto, si tiene curvas cerradas, si tiene curvas abiertas, si tiene curvas en S, etc. Si no hubiese información en los campos que te he descrito  simplemente escribe \"No se observa\").  No agregues campos adicionales a los que te he señalado
 
-Por ejemplo espero que el documento JSON obtenido tenga la siguiente forma:
+Devuelve un documento JSON con datos despues de analizar la imagen. Sólo devuelve JSON, no otro texto. Actúa como un experto en seguridad vial y tránsito, tu objetivo es hacer un inventario vial describiendo los siguientes campos:  
+
+
 {
-    "Latitud": "S20 59.0798",
-    "Longitud": "W68 50.8467",
-    "Altitud": "4335 M",
-    "Velocidad": "44 km/h",
-    "Fecha": "2024/01/21 13:53:40",
-    "Se\u00f1alizaci\u00f3n vial": "Se\u00f1al de advertencia de curva hacia la derecha",
-    "Eventos en ruta": "No se observa",
-    "Estado del camino": "Camino de grava sin pavimentar, con presencia de piedras sueltas y algunas irregularidades",
-    "Tipo de superficie": "Camino de ripio",
-    "Descripci\u00f3n del entorno": "Torre de alta tensi\u00f3n visible, terreno monta\u00f1oso y despejado, sin estructuras adicionales",
-    "Curvas": "Curva hacia la derecha visible"
+  "Latitud": "Donde el formato tendrá esta forma:  S20 59.5334",
+  "Longitud": "Donde el formato tendrá esta forma: W68 50.5161",
+  "Altitud": "VALOR",
+  "Velocidad": "VALOR",
+  "Fecha": "VALOR",
+  "Carpeta de Rodado": 
+  [
+    "Pavimento de hormigón",
+    "Pavimento asfáltico",
+    "Granular"
+],
+  "Tipo de Elemento": 
+  {
+    "Sección_Transversal": "Perfil que muestra la distribución de los distintos componentes del camino a lo ancho.",
+    "Semáforo": "Dispositivo de control de tráfico para regular el movimiento de vehículos y peatones.",
+    "Señalización_Horizontal": "Marcas viales pintadas sobre la calzada como líneas, símbolos, letras.",
+    "Señalización_Vertical": "Señales de tráfico instaladas en postes a lo largo de las vías.",
+    "Servicios_Vial": "Teléfono que está en la carretera.",
+    "Sistemas_De_Energía_Eléctrica": "Iluminación y tendido eléctrico presentes en la calzada.",
+    "Zonas_De_Actividades_Complementarias": "Áreas o instalaciones que proporcionan servicios adicionales en las vías.",
+    "Acceso": "Entrada o salida a una propiedad privada o camino de menor flujo de tránsito.",
+    "Alinamiento_Horizontal": "Giro en la carretera.",
+    "Aliniamiento_Vertical": "Indica la inclinación de un camino en subida o bajada.",
+    "Elementos_De_Contención_Peatonal": "Barreras para impedir que personas entren a la carretera.",
+    "Elementos_De_Contención_Vial": "Barreras para contener y redireccionar vehículos sin control.",
+    "Intersección": "Cruce de caminos.",
+    "Paso_Peatonal": "Zonas para el cruce de personas por la ruta.",
+    "Carpeta_De_Rodado": "Capa superior del pavimento."
+},
+  "Señalización vial": "VALOR",
+  "Eventos en ruta": "VALOR",
+  "Estado del camino": "VALOR",
+  "Descripción del entorno": "VALOR",
 }
 
-O
+#Instrucciones
+1.- Debes generar un archivo JSON sin estructuras anidadas, es decir, sin objetos dentro de la estructura.
+2.- En el campo "Latitud" deberás usar el siguiente formato  S20 59.5334".
+3.- En el campo  "Longitud" deberás usar el siguiente formato W68 50.5161".
+4.- En el campo  "Altitud" "debera poner un valor numérico en metros (m)".
+5.  En el campo "Velocidad" deberas poner un valor numérico en km/h".
+6.  En el campo "Fecha" deberás poner un valor en este formato 2024/01/12 11:20:39".
+7.- En el campo "Carpeta de Rodado" debes devolver solo un elemento de la lista.
+8.- En el campo "Tipo de Elemento" debes devolver solo un elemento del diccionario.
+9.- En el campo "Señalización vial" debes describir en detalle los símbolos viales que se observan al costado del camino (Si el símbolo vial esta lejano, más allá de 5 metros no lo describas).
+10.- En el campo "Eventos en ruta" debes describir en detalle y paso a paso cualquier acontecimiento anormal dentro del camino, incluye en esta descripción una explicación de por qué estaría ocurriendo el evento en particular (personas trabajando por reparación del camino debido a puente roto, vehículo detenido por choque en la carretera, animales en la ruta por cruce de ganadero por el camino, etc).
+11.- En el campo "Estado del camino" "Describe en detalle paso a paso el estado del camino por donde transita el vehículo utiliza (como presencia pavimento, hoyos en el camino, calamina, carpeta rodada, piedras sueltas, irregularidades, etc). 
+12.- En el campo "Descripción del entorno" debes describir estructuras hechas por el hombre en el entorno por donde transita el vehículo (Por ejemplo, una caseta de madera abandonada a la izquierda, un pozo en buen estado a la derecha, una torre de alta tensión al fondo, etc) y finalmente el campo.
+
+
+# Ejemplos formatos de salida JSON validos:
+
+
+<ejemplo>
+{
+    "Latitud": "S20 59.4795",
+    "Longitud": "W68 50.5439",
+    "Altitud": "4355 m",
+    "Velocidad": "36 km/h",
+    "Fecha": "2024/01/21 13:52:17",
+    "Carpeta de Rodado":  "Pavimento asf\u00e1ltico",
+    "Tipo de Elemento": "Acceso",
+    "Se\u00f1alizaci\u00f3n vial": "Se observa una se\u00f1al de tr\u00e1nsito vertical de color amarillo que indica un aviso de 129 metros, probablemente refiri\u00e9ndose a una condici\u00f3n espec\u00edfica en la carretera a esa distancia.",
+    "Eventos en ruta": "No se observan eventos anormales en la ruta en la imagen proporcionada.",
+    "Estado del camino": "La carretera tiene una carpeta de rodado de tipo granular, no hay presencia de pavimento y parece estar nivelada sin presencia de hoyos visibles. No hay se\u00f1ales de calaminas, piedras sueltas ni grandes irregularidades en la superficie.",
+    "Descripci\u00f3n del entorno": "El entorno muestra una infraestructura de energ\u00eda el\u00e9ctrica con varios postes y l\u00edneas de transmisi\u00f3n distribuidas de manera regular a lo largo del paisaje. No se observan estructuras como casetas o torres diferentes a los postes de energ\u00eda el\u00e9ctrica ni tampoco presencia de agua o pozos visibles."
+}
+</ejemplo>
+
+
+
+<ejemplo>
 {
     "Latitud": "S20 58.8237",
     "Longitud": "W68 51.0752",
     "Altitud": "4309 M",
     "Velocidad": "43 km/h",
     "Fecha": "2024/01/21 13:54:34",
-    "Se\u00f1alizaci\u00f3n vial": "No se observa",
-    "Eventos en ruta": "No se observa",
-    "Estado del camino": "Camino amplio, sin pavimentar, con presencia de piedras sueltas y ligeramente irregular.",
-    "Tipo de superficie": "Camino de ripio",
-    "Descripci\u00f3n del entorno": "Presencia de barandas de concreto a ambos lados del camino, torres de alta tensi\u00f3n a lo lejos, terreno des\u00e9rtico y monta\u00f1oso.",
-    "Curvas": "Camino recto con ligera curvatura"
+    "Carpeta de Rodado": "Granular",
+    "Tipo de Elemento": "Elementos_De_Contenci\u00f3n_Vial",
+    "Se\u00f1alizaci\u00f3n vial": "No se observan s\u00edmbolos viales cercanos dentro de los 5 metros al costado del camino.",
+    "Eventos en ruta": "No se observan eventos anormales en la ruta; el camino est\u00e1 despejado y no hay presencia de personal de trabajo, veh\u00edculos detenidos, ni animales en la ruta.",
+    "Estado del camino": "Se observa una carretera con una carpeta de rodado granular, sin pavimento asf\u00e1ltico ni de hormig\u00f3n. Hay algunas irregularidades leves en la superficie y presencia de barreras de contenci\u00f3n a ambos lados del camino.",
+    "Descripci\u00f3n del entorno": "El entorno comprende un paisaje \u00e1rido con vegetaci\u00f3n escasa, monta\u00f1as en la distancia y presencia de l\u00edneas de transmisi\u00f3n el\u00e9ctrica que siguen un trazado paralelo al camino, lo que sugiere una infraestructura de energ\u00eda el\u00e9ctrica."
 }
+</ejemplo>
+
+<ejemplo>
+{
+    "Latitud": "S20 59.5076",
+    "Longitud": "W68 50.5264",
+    "Altitud": "4354 M",
+    "Velocidad": "37 km/h",
+    "Fecha": "2024/01/21 13:52:11",
+    "Carpeta de Rodado": "Granular",
+    "Tipo de Elemento": "Se\u00f1alizaci\u00f3n_Vertical",
+    "Se\u00f1alizaci\u00f3n vial": "Se observa una se\u00f1al de tr\u00e1nsito vertical de advertencia, indicando un zigzag o serie de curvas adelante.",
+    "Eventos en ruta": "No se observan eventos anormales en la ruta; el camino se encuentra despejado sin presencia de trabajos, veh\u00edculos detenidos, o animales.",
+    "Estado del camino": "La calzada parece ser de carpeta de rodado tipo granular, en buenas condiciones y sin se\u00f1ales de deterioro significativo como hoyos o grandes irregularidades.",
+    "Descripci\u00f3n del entorno": "El entorno consiste en un paisaje \u00e1rido y monta\u00f1oso con muy poca vegetaci\u00f3n. No hay estructuras hechas por el hombre cerca de la carretera, con excepci\u00f3n de las se\u00f1ales de tr\u00e1nsito y los postes de electricidad visibles a lo largo de la ruta."
+}
+</ejemplo>
+
+<ejemplo>
+{
+    "Latitud": "S20 58.8237",
+    "Longitud": "W68 51.0752",
+    "Altitud": "4309 M",
+    "Velocidad": "43 km/h",
+    "Fecha": "2024/01/21 13:54:34",
+    "Carpeta de Rodado": "Granular",
+    "Tipo de Elemento": "Elementos_De_Contenci\u00f3n_Vial",
+    "Se\u00f1alizaci\u00f3n vial": "No se observan s\u00edmbolos viales cercanos dentro de los 5 metros al costado del camino.",
+    "Eventos en ruta": "No se observan eventos anormales en la ruta; el camino est\u00e1 despejado y no hay presencia de personal de trabajo, veh\u00edculos detenidos, ni animales en la ruta.",
+    "Estado del camino": "Se observa una carretera con una carpeta de rodado granular, sin pavimento asf\u00e1ltico ni de hormig\u00f3n. Hay algunas irregularidades leves en la superficie y presencia de barreras de contenci\u00f3n a ambos lados del camino.",
+    "Descripci\u00f3n del entorno": "El entorno comprende un paisaje \u00e1rido con vegetaci\u00f3n escasa, monta\u00f1as en la distancia y presencia de l\u00edneas de transmisi\u00f3n el\u00e9ctrica que siguen un trazado paralelo al camino, lo que sugiere una infraestructura de energ\u00eda el\u00e9ctrica."
+}
+</ejemplo>
+
+
+
+<ejemplo>
+{
+    "Latitud": "S20 58.8237",
+    "Longitud": "W68 51.0752",
+    "Altitud": "4309 M",
+    "Velocidad": "43 km/h",
+    "Fecha": "2024/01/21 13:54:34",
+    "Carpeta de Rodado":  "Pavimento asf\u00e1ltico",
+    "Tipo de Elemento": "Elementos_De_Contenci\u00f3n_Vial",
+    "Se\u00f1alizaci\u00f3n vial": "No se observan s\u00edmbolos viales cercanos dentro de los 5 metros al costado del camino.",
+    "Eventos en ruta": "No se observan eventos anormales en la ruta; el camino est\u00e1 despejado y no hay presencia de personal de trabajo, veh\u00edculos detenidos, ni animales en la ruta.",
+    "Estado del camino": "Se observa una carretera con una carpeta de rodado granular, sin pavimento asf\u00e1ltico ni de hormig\u00f3n. Hay algunas irregularidades leves en la superficie y presencia de barreras de contenci\u00f3n a ambos lados del camino.",
+    "Descripci\u00f3n del entorno": "El entorno comprende un paisaje \u00e1rido con vegetaci\u00f3n escasa, monta\u00f1as en la distancia y presencia de l\u00edneas de transmisi\u00f3n el\u00e9ctrica que siguen un trazado paralelo al camino, lo que sugiere una infraestructura de energ\u00eda el\u00e9ctrica."
+}
+</ejemplo>
 
 """
