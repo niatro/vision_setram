@@ -6,7 +6,7 @@ import time
 import pandas as pd
 import shutil
 from dotenv import load_dotenv
-from prompt import prompt
+from prompt import prompt_r1, prompt_r2
 from anthropic import Anthropic
 
 load_dotenv()
@@ -30,7 +30,7 @@ def describe_image_with_gpt4(image_path, data_records):
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": prompt},
+                        {"type": "text", "text": prompt_r1},
                         {"type": "image_url", "image_url": {"url": image_url}}
                     ],
                 }
@@ -76,7 +76,7 @@ def describe_image_with_gpt4(image_path, data_records):
 
 
 def describe_image_with_haiku(image_path, data_records):
-    """Envía la imagen codificada en base64 al modelo Haiku de Anthropic y maneja los datos de respuesta."""
+    """Envía la imagen codificada en base64 al modelo Haiku de Anthropic dos veces y maneja los datos de respuesta."""
     MODEL_NAME = "claude-3-haiku-20240307"
     
     # Determina el tipo de medio basado en la extensión del archivo
@@ -87,13 +87,14 @@ def describe_image_with_haiku(image_path, data_records):
         binary_data = image_file.read()
     base_64_encoded_data = base64.b64encode(binary_data)
     base64_string = base_64_encoded_data.decode('utf-8')
-    
-    message_list = [
+
+    # Primer llamado al modelo Haiku con prompt_r1
+    message_list_r1 = [
         {
             "role": 'user',
             "content": [
                 {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": base64_string}},
-                {"type": "text", "text": prompt}
+                {"type": "text", "text": prompt_r1}
             ]
         }
     ]
@@ -102,27 +103,53 @@ def describe_image_with_haiku(image_path, data_records):
         # Inicializar cliente de Anthropic
         client = Anthropic()
         
-        # Envío de la imagen y el texto al modelo Haiku
-        response = client.messages.create(
+        # Envío de la imagen y el texto al modelo Haiku (primera vez)
+        response_r1 = client.messages.create(
             model=MODEL_NAME,
             max_tokens=2048,
-            messages=message_list
+            messages=message_list_r1
         )
         
-        # Procesamiento de la respuesta
-        json_data = json.loads(response.content[0].text) if response.content[0].text else {}
-        if json_data:
+        # Procesamiento de la respuesta del primer llamado
+        json_data_r1 = json.loads(response_r1.content[0].text) if response_r1.content[0].text else {}
+
+        # Segundo llamado al modelo Haiku con prompt_r2 y el JSON del primer llamado
+        with open("prompt.py", "r") as file:
+            prompt_r2 = file.read()
+
+        prompt_r2 = prompt_r2.replace("{$JSON}", json.dumps(json_data_r1))
+
+        message_list_r2 = [
+            {
+                "role": 'user',
+                "content": [
+                    {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": base64_string}},
+                    {"type": "text", "text": prompt_r2}
+                ]
+            }
+        ]
+
+        # Envío de la imagen y el texto al modelo Haiku (segunda vez)
+        response_r2 = client.messages.create(
+            model=MODEL_NAME,
+            max_tokens=2048,
+            messages=message_list_r2
+        )
+
+        # Procesamiento de la respuesta del segundo llamado
+        json_data_r2 = json.loads(response_r2.content[0].text) if response_r2.content[0].text else {}
+        if json_data_r2:
             filename_without_extension = os.path.splitext(os.path.basename(image_path))[0]
             json_filename = f"{filename_without_extension}.json"
             if not os.path.exists('Data'):
                 os.makedirs('Data')
             with open(os.path.join("Data", json_filename), 'w') as json_file:
-                json.dump(json_data, json_file, indent=4)
+                json.dump(json_data_r2, json_file, indent=4)
             
-            # Actualización de registros y copia de la imagen
-            json_data['Ruta Imagen'] = os.path.join('repo_imagenes', os.path.basename(image_path))
-            json_data['Nombre del archivo'] = os.path.basename(image_path)
-            data_records.append(json_data)
+            # Actualización de registros y copia de la imagen (solo una vez)
+            json_data_r2['Ruta Imagen'] = os.path.join('repo_imagenes', os.path.basename(image_path))
+            json_data_r2['Nombre del archivo'] = os.path.basename(image_path)
+            data_records.append(json_data_r2)
             
             if not os.path.exists('repo_imagenes'):
                 os.makedirs('repo_imagenes')
@@ -133,8 +160,6 @@ def describe_image_with_haiku(image_path, data_records):
             print(f"No valid data received for {image_path}")
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-
-
 
 def describe_image(model, image_path, data_records):
     """Función genérica para describir la imagen usando el modelo especificado."""
