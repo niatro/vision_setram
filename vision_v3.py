@@ -8,6 +8,8 @@ import shutil
 from dotenv import load_dotenv
 from prompt import prompt_r1, prompt_r2
 from anthropic import Anthropic
+import textwrap
+
 
 load_dotenv()
 
@@ -73,93 +75,105 @@ def describe_image_with_gpt4(image_path, data_records):
     except json.JSONDecodeError as e:
         print(f"Error decoding JSON for {image_path}: {str(e)}")
 
-
-
-def describe_image_with_haiku(image_path, data_records):
-    """Envía la imagen codificada en base64 al modelo Haiku de Anthropic dos veces y maneja los datos de respuesta."""
-    MODEL_NAME = "claude-3-haiku-20240307"
-    
-    # Determina el tipo de medio basado en la extensión del archivo
+def load_and_encode_image(image_path):
+    """Load an image from a path and encode it to base64."""
+    # Determine the media type based on file extension
     file_extension = os.path.splitext(image_path)[1].lower()
     media_type = "image/jpeg" if file_extension in ['.jpg', '.jpeg'] else "image/png"
     
+    # Read and encode the image
     with open(image_path, "rb") as image_file:
         binary_data = image_file.read()
-    base_64_encoded_data = base64.b64encode(binary_data)
-    base64_string = base_64_encoded_data.decode('utf-8')
+    base64_encoded_data = base64.b64encode(binary_data)
+    base64_string = base64_encoded_data.decode('utf-8')
+    
+    return base64_string, media_type
 
-    # Primer llamado al modelo Haiku con prompt_r1
-    message_list_r1 = [
+def create_api_message(base64_string, media_type, prompt_text):
+    """Create a message list for API request."""
+    message_list = [
         {
             "role": 'user',
             "content": [
                 {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": base64_string}},
-                {"type": "text", "text": prompt_r1}
+                {"type": "text", "text": prompt_text}
             ]
         }
     ]
+    return message_list
+
+def send_to_api_and_process(client, model_name, message_list):
+    """Send the constructed message to the API and process the response."""
+    try:
+        response = client.messages.create(
+            model=model_name,
+            max_tokens=2048,
+            messages=message_list
+        )
+         # Imprime la respuesta cruda para depuración
+        print("Respuesta cruda de la API:", response.content)
+        # Verifica si la respuesta tiene contenido y si es un JSON válido
+        if response.content and response.content[0].text:
+            json_data = json.loads(response.content[0].text)
+        else:
+            print("Respuesta de la API vacía o no válida.")
+            return {}  # Retorna un diccionario vacío si no hay datos válidos
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {str(e)}")
+        return {}
+    except Exception as e:
+        print(f"Error processing API response: {str(e)}")
+        return {}
+    return json_data
+
+
+def save_data_and_manage_files(json_data, image_path, data_records):
+    """Save JSON data to a file, update records, and copy the image to a repository."""
+    if json_data:
+        filename_without_extension = os.path.splitext(os.path.basename(image_path))[0]
+        json_filename = f"{filename_without_extension}.json"
+        if not os.path.exists('Data'):
+            os.makedirs('Data')
+        with open(os.path.join("Data", json_filename), 'w') as json_file:
+            json.dump(json_data, json_file, indent=4)
+        
+        # Update data records and copy image
+        data_records.append(json_data)
+        
+        if not os.path.exists('repo_imagenes'):
+            os.makedirs('repo_imagenes')
+        shutil.copy(image_path, os.path.join('repo_imagenes', os.path.basename(image_path)))
+
+        return f"Data saved to Data/{json_filename} and image copied to repo_imagenes/{os.path.basename(image_path)}"
+    else:
+        return f"No valid data received for {image_path}"
+    
+def describe_image_with_haiku(image_path, data_records):
+    """Envía la imagen codificada en base64 al modelo Haiku de Anthropic y maneja los datos de respuesta."""
+    MODEL_NAME = "claude-3-haiku-20240307"
     
     try:
-        # Inicializar cliente de Anthropic
-        client = Anthropic()
+        # Load and encode image
+        base64_string, media_type = load_and_encode_image(image_path)
         
-        # Envío de la imagen y el texto al modelo Haiku (primera vez)
-        response_r1 = client.messages.create(
-            model=MODEL_NAME,
-            max_tokens=2048,
-            messages=message_list_r1
-        )
+        # First API call
+        message_list = create_api_message(base64_string, media_type, prompt_r1)
+        client = Anthropic()  # Assume client initialization
+        json_data = send_to_api_and_process(client, MODEL_NAME, message_list)
+        save_data_and_manage_files(json_data, image_path, data_records)
+
+        # Format prompt_r2 with the JSON data from the first call
+        formatted_prompt_r2 = prompt_r2.replace("{$JSON}", json.dumps(json_data))
         
-        # Procesamiento de la respuesta del primer llamado
-        json_data_r1 = json.loads(response_r1.content[0].text) if response_r1.content[0].text else {}
-
-        # Segundo llamado al modelo Haiku con prompt_r2 y el JSON del primer llamado
-        with open("prompt.py", "r") as file:
-            prompt_r2 = file.read()
-
-        prompt_r2 = prompt_r2.replace("{$JSON}", json.dumps(json_data_r1))
-
-        message_list_r2 = [
-            {
-                "role": 'user',
-                "content": [
-                    {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": base64_string}},
-                    {"type": "text", "text": prompt_r2}
-                ]
-            }
-        ]
-
-        # Envío de la imagen y el texto al modelo Haiku (segunda vez)
-        response_r2 = client.messages.create(
-            model=MODEL_NAME,
-            max_tokens=2048,
-            messages=message_list_r2
-        )
-
-        # Procesamiento de la respuesta del segundo llamado
-        json_data_r2 = json.loads(response_r2.content[0].text) if response_r2.content[0].text else {}
-        if json_data_r2:
-            filename_without_extension = os.path.splitext(os.path.basename(image_path))[0]
-            json_filename = f"{filename_without_extension}.json"
-            if not os.path.exists('Data'):
-                os.makedirs('Data')
-            with open(os.path.join("Data", json_filename), 'w') as json_file:
-                json.dump(json_data_r2, json_file, indent=4)
-            
-            # Actualización de registros y copia de la imagen (solo una vez)
-            json_data_r2['Ruta Imagen'] = os.path.join('repo_imagenes', os.path.basename(image_path))
-            json_data_r2['Nombre del archivo'] = os.path.basename(image_path)
-            data_records.append(json_data_r2)
-            
-            if not os.path.exists('repo_imagenes'):
-                os.makedirs('repo_imagenes')
-            shutil.copy(image_path, os.path.join('repo_imagenes', os.path.basename(image_path)))
-            
-            print(f"Data saved to Data/{json_filename} and image copied to repo_imagenes/{os.path.basename(image_path)}")
-        else:
-            print(f"No valid data received for {image_path}")
+        # Second API call with the updated prompt
+        message_list_r2 = create_api_message(base64_string, media_type, formatted_prompt_r2)
+        json_data_r2 = send_to_api_and_process(client, MODEL_NAME, message_list_r2)
+        save_data_and_manage_files(json_data_r2, image_path, data_records)
+        
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
+        print(f"An error occurred while processing {image_path}: {str(e)}")
+
+
 
 def describe_image(model, image_path, data_records):
     """Función genérica para describir la imagen usando el modelo especificado."""

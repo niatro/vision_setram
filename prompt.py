@@ -148,8 +148,11 @@ Devuelve un documento JSON con datos despues de analizar la imagen. Sólo devuel
 
 prompt_r2 = """
 
-<document> 
-Para cada elemento JSON proporcionado en {$JSON}, realiza las siguientes tareas:
+Tu OBJETIVO es devolver un elemento JSON valido, solo devuelve JSON, no otro texto.
+Para el siguiente elemento JSON:
+{$JSON}
+
+Debes agregar el campo "Estado Físico" al elemento JSON de arriba, basándote en el valor del campo "Tipo de Elemento" y la información obtenida de la imagen.
 
 Identifica el valor del campo "Tipo de Elemento".
 Analiza la imagen adjunta para obtener información adicional que pueda ayudar a determinar el estado físico del elemento. Ejemplo de imagen adjunta: 
@@ -206,6 +209,6 @@ Ejemplo de JSON de salida:
 "Descripci\u00f3n del entorno": "El entorno comprende un paisaje \u00e1rido con vegetaci\u00f3n escasa, monta\u00f1as en la distancia y presencia de l\u00edneas de transmisi\u00f3n el\u00e9ctrica que siguen un trazado paralelo al camino, lo que sugiere una infraestructura de energ\u00eda el\u00e9ctrica.",
 "Estado F\u00edsico": "Cumple"
 }
-</document>
+
 
 """
