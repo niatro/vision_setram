@@ -147,13 +147,17 @@ def save_data_and_manage_files(json_data, image_path, data_records):
         with open(os.path.join("Data", json_filename), 'w') as json_file:
             json.dump(json_data, json_file, indent=4)
         
-        # Update data records and copy image
+        # Añade la ruta de la imagen al JSON
+        json_data['Ruta Imagen'] = os.path.join('repo_imagenes', os.path.basename(image_path))
+        
+        # Añade el registro JSON a data_records
         data_records.append(json_data)
         
+        # Copia la imagen a 'repo_imagenes'
         if not os.path.exists('repo_imagenes'):
             os.makedirs('repo_imagenes')
         shutil.copy(image_path, os.path.join('repo_imagenes', os.path.basename(image_path)))
-
+        
         return f"Data saved to Data/{json_filename} and image copied to repo_imagenes/{os.path.basename(image_path)}"
     else:
         return f"No valid data received for {image_path}"
@@ -218,10 +222,9 @@ def extract_data_to_excel(data_records):
         if 'Ruta Imagen' in df.columns:
             ruta_imagen_col = df.columns.get_loc('Ruta Imagen') + 1  # Excel columns start at 1
             for i, row in enumerate(df['Ruta Imagen']):
-                worksheet.write_url(f'A{i+2}', f"external:{row}", string='Ver Imagen')
+                worksheet.write_url(i+1, ruta_imagen_col, f"external:{row}", string='Ver Imagen')
 
     print("Reporte de imágenes generado con éxito.")
-
 
 
 
