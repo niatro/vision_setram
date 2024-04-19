@@ -8,7 +8,7 @@ import shutil
 from dotenv import load_dotenv
 from prompt import prompt_r1, prompt_r2
 from anthropic import Anthropic
-import textwrap
+
 
 
 load_dotenv()
@@ -102,6 +102,16 @@ def create_api_message(base64_string, media_type, prompt_text):
     ]
     return message_list
 
+def handle_api_error(error_response):
+    try:
+        error_info = error_response.json()  # Obtiene el JSON de la respuesta de error
+        error_type = error_info.get('error', {}).get('type', 'unknown_error')
+        error_message = error_info.get('error', {}).get('message', 'No message provided.')
+        print(f"API error: {error_type} - {error_message}")
+    except Exception as e:
+        print(f"Error processing error response: {str(e)}")
+
+
 def send_to_api_and_process(client, model_name, message_list):
     """Send the constructed message to the API and process the response."""
     try:
@@ -149,25 +159,24 @@ def save_data_and_manage_files(json_data, image_path, data_records):
         return f"No valid data received for {image_path}"
     
 def describe_image_with_haiku(image_path, data_records):
-    """Envía la imagen codificada en base64 al modelo Haiku de Anthropic y maneja los datos de respuesta."""
+    """Realiza dos llamados al modelo Haiku y maneja los datos de respuesta."""
     MODEL_NAME = "claude-3-haiku-20240307"
     
     try:
-        # Load and encode image
         base64_string, media_type = load_and_encode_image(image_path)
         
-        # First API call
+        # Primer llamado a la API
         message_list = create_api_message(base64_string, media_type, prompt_r1)
-        client = Anthropic()  # Assume client initialization
+        client = Anthropic()  # Suponiendo inicialización del cliente
         json_data = send_to_api_and_process(client, MODEL_NAME, message_list)
-        save_data_and_manage_files(json_data, image_path, data_records)
 
-        # Format prompt_r2 with the JSON data from the first call
+        # Preparar segundo llamado
         formatted_prompt_r2 = prompt_r2.replace("{$JSON}", json.dumps(json_data))
-        
-        # Second API call with the updated prompt
         message_list_r2 = create_api_message(base64_string, media_type, formatted_prompt_r2)
         json_data_r2 = send_to_api_and_process(client, MODEL_NAME, message_list_r2)
+
+        # Limpia data_records antes de guardar el segundo resultado
+        # data_records.clear()
         save_data_and_manage_files(json_data_r2, image_path, data_records)
         
     except Exception as e:
@@ -194,34 +203,27 @@ def process_folder(folder_path, model, data_records):
 
 def extract_data_to_excel(data_records):
     """Extrae los datos recolectados a un archivo Excel con hipervínculos."""
-    df = pd.json_normalize(data_records)
-    # Asegúrate de que 'Ruta Imagen' y 'Nombre del archivo' están incluidos en data_records
+    if not data_records:
+        print("No hay datos para exportar.")
+        return
 
-    # Usamos ExcelWriter para un control más fino sobre la escritura de Excel
+    df = pd.json_normalize(data_records)
     with pd.ExcelWriter('reporte_imagenes.xlsx', engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False, sheet_name='Reporte')
-
-        # Trabaja con el workbook y el worksheet para editar el formato
+        
         workbook = writer.book
         worksheet = writer.sheets['Reporte']
-
-        # Encuentra las columnas correctas para los hipervínculos y las fotos
-        ruta_imagen_col = df.columns.get_loc('Ruta Imagen') + 1  # +1 debido al índice de Excel
-        nombre_archivo_col = df.columns.get_loc('Nombre del archivo') + 1  # +1 debido al índice de Excel
-
-        # Itera sobre las filas para añadir hipervínculos
-                # Itera sobre las filas para añadir hipervínculos
-        for i, row in df.iterrows():
-            # Calcula la letra de la columna basada en ruta_imagen_col
-            col_letter = chr(ruta_imagen_col + 64)  # Convierte el índice de la columna a letra (A=1, B=2, ...)
-            # Añade un hipervínculo en la celda correcta
-            worksheet.write_url(f'{col_letter}{i + 2}', f"external:{row['Ruta Imagen']}", string='Ver Imagen')
-
-
-        # Añade el nombre del archivo de la foto en la celda 'Fotos'
-        # Este paso ya se maneja al incluir 'Nombre del archivo' en el DataFrame
+        
+        # Añadir hipervínculos si la columna existe
+        if 'Ruta Imagen' in df.columns:
+            ruta_imagen_col = df.columns.get_loc('Ruta Imagen') + 1  # Excel columns start at 1
+            for i, row in enumerate(df['Ruta Imagen']):
+                worksheet.write_url(f'A{i+2}', f"external:{row}", string='Ver Imagen')
 
     print("Reporte de imágenes generado con éxito.")
+
+
+
 
 def main():
     folders = ["images", "senales", "eventos"]

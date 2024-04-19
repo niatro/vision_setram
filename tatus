@@ -1,0 +1,79 @@
+[33mcommit 325a9bb3a9872fdb8d18d7af1e8eb0433c2bc16f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: nicolas <nicolas.sanhueza@gmail.com>
+Date:   Thu Apr 18 08:05:00 2024 -0400
+
+    describe_image_with_haiku refactorizada
+
+[33mcommit 00f09e1168de418fdf44a28d599a54e370141062[m
+Merge: 2aaa31c 80d045b
+Author: nicolas <nicolas.sanhueza@gmail.com>
+Date:   Tue Apr 16 08:03:47 2024 -0400
+
+    Merge branch 'master'
+
+[33mcommit 80d045b8eb2631ba20bef221c060319eec43bbb2[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m
+Author: Nicolás Sanhueza <nicolas.sanhueza@gmail.com>
+Date:   Tue Apr 16 07:45:05 2024 -0400
+
+    haiku 2 prompts
+
+[33mcommit 5a781ae82325e185051724a9306dd78f7e4bfd9b[m
+Author: Nicolás Sanhueza <nicolas.sanhueza@gmail.com>
+Date:   Tue Apr 9 16:51:45 2024 -0400
+
+    Mejoramiento prompt para haiku
+
+[33mcommit 0f54538b125204eac409095e03b02a0685ec1c60[m
+Author: Nicolás Sanhueza <nicolas.sanhueza@gmail.com>
+Date:   Thu Apr 4 11:03:03 2024 -0300
+
+    actualizar
+
+[33mcommit 2aaa31c438d71e10e28d6f96f595d42202b89cf9[m
+Merge: ceeaa41 eb2cf2b
+Author: nicolas <nicolas.sanhueza@gmail.com>
+Date:   Wed Apr 3 16:31:49 2024 -0300
+
+    fusion master y main
+
+[33mcommit 43e3f0446c5caf0943037f67e72b673b57c8078b[m
+Author: Nicolás Sanhueza <nicolas.sanhueza@gmail.com>
+Date:   Tue Apr 2 11:11:08 2024 -0300
+
+    Incluir cambios en .DS_Store 2
+
+[33mcommit eb2cf2bdfe971f3ad792e2cb64486271e37a2eab[m
+Author: Nicolás Sanhueza <nicolas.sanhueza@gmail.com>
+Date:   Tue Apr 2 10:52:21 2024 -0300
+
+    haikasu
+
+[33mcommit ff6fa04c1e3eb1355348caa0ce9910a8fca692a0[m
+Author: Nicolás Sanhueza <nicolas.sanhueza@gmail.com>
+Date:   Tue Apr 2 10:46:12 2024 -0300
+
+    haiku ready 2
+
+[33mcommit ce7b853d9ada17ec423a08578f38485ffa4fed89[m
+Author: Nicolás Sanhueza <nicolas.sanhueza@gmail.com>
+Date:   Tue Apr 2 10:32:46 2024 -0300
+
+    Haiku ready
+
+[33mcommit ef388487cc77e6dd528be236eec0b744498bb54d[m
+Author: Nicolás Sanhueza <nicolas.sanhueza@gmail.com>
+Date:   Tue Apr 2 10:26:47 2024 -0300
+
+    Haiku agregado
+
+[33mcommit ceeaa4108c3c54ceb13b6a30a24e68e0dcef006a[m
+Author: nicolas <nicolas.sanhueza@gmail.com>
+Date:   Sun Mar 24 12:19:13 2024 -0300
+
+    Prompt actualizado y se separa del código para futuras ediciones
+
+[33mcommit 8f7990bd387653dbea2e0dbe19ccd2dc19b8886a[m
+Author: nicolas <nicolas.sanhueza@gmail.com>
+Date:   Sun Mar 17 18:00:06 2024 -0300
+
+    first commit
