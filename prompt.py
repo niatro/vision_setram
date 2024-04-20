@@ -148,38 +148,52 @@ Devuelve un documento JSON con datos despues de analizar la imagen. Sólo devuel
 
 prompt_r2 = """
 
+<Objetivo>
 Tu OBJETIVO es devolver un elemento JSON valido, solo devuelve JSON, no otro texto.
 Para el siguiente elemento JSON:
 {$JSON}
+</Objetivo>
 
+<Reglas>
 Debes agregar el campo "Estado Físico" al elemento JSON de arriba, basándote en el valor del campo "Tipo de Elemento" y la información obtenida de la imagen.
 
 Identifica el valor del campo "Tipo de Elemento".
-Analiza la imagen adjunta para obtener información adicional que pueda ayudar a determinar el estado físico del elemento. Ejemplo de imagen adjunta: 
-Basándote en el valor del campo "Tipo de Elemento", utiliza los siguientes criterios para determinar si el elemento cumple o no cumple con los requisitos:
+Analiza la imagen adjunta para obtener información adicional que pueda ayudar a determinar el estado físico del elemento. 
 
-Si el "Tipo de Elemento" es "Sección_Transversal", "Semáforo", "Servicios_Vial", "Sistema_De_Energía_Eléctrica", "Zonas_de_Actividades_Complementarias", "Acceso", "Alineamiento_Horizontal", "Alineamiento_Vertical", "Elementos_de_Contención_Peatonal" o "Intersección", el estado físico siempre se considera como "Cumple".
-Si el "Tipo de Elemento" es "Señalización_Horizontal", evalúa si cumple con los siguientes criterios:
-No presenta desgaste, suciedad, agrietamiento en su pintura y su reflectancia es correcta en condiciones de poca luz.
-En caso de parches, está repintada sin perder la demarcación horizontal. Si cumple con estos criterios, asigna "Cumple"; de lo contrario, asigna "No cumple".
 
-Si el "Tipo de Elemento" es "Señalización_Vertical", evalúa si cumple con los siguientes criterios:
-Está firmemente sujeta a su estructura de soporte y presenta verticalidad perfecta.
-Su leyenda o símbolo no presenta signos de desgaste y la pintura está en buen estado.
-Tiene reflectancia correcta y se mantiene libre de polución o suciedad. Si cumple con estos criterios, asigna "Cumple"; de lo contrario, asigna "No cumple".
+Basándote en el valor del campo "Tipo de Elemento", utiliza los siguientes criterios para determinar si el elemento cumple, no cumple o no aplica de acuerdo con los siguientes criterios:
 
-Si el "Tipo de Elemento" es "Elementos_de_Contención_Vial", evalúa si cumple con los siguientes criterios:
-La integridad estructural es sólida, sin deformaciones o roturas que afecten su funcionamiento.
-Está correctamente anclada al suelo. Si cumple con estos criterios, asigna "Cumple"; de lo contrario, asigna "No cumple".
-Si el "Tipo de Elemento" es "Paso_Peatonal", evalúa si cumple con los siguientes criterios:
-La superficie se encuentra en buenas condiciones, sin grietas, baches o desgaste que provoquen lesiones o caídas.
-Cuenta con buena accesibilidad (rampas, superficies antideslizantes) y buena demarcación (líneas de detención, zig-zag, advertencia de paso de cebra).
+# Si el "Tipo de Elemento" es "Sección_Transversal", "Semáforo", "Servicios_Vial", "Sistema_De_Energía_Eléctrica", "Zonas_de_Actividades_Complementarias", el estado físico siempre se considera como "No aplica".
+# Si el "Tipo de Elemento" es "Acceso", "Alineamiento_Horizontal", "Alineamiento_Vertical", "Elementos_de_Contención_Peatonal" o "Intersección", el estado físico siempre se considera como "Cumple".
 
-Tiene una sincronización adecuada en sus semáforos. Si cumple con estos criterios, asigna "Cumple"; de lo contrario, asigna "No cumple".
-Agrega un nuevo campo llamado "Estado Físico" al elemento JSON.
-Asigna el valor "Cumple" o "No cumple" al campo "Estado Físico" según los criterios evaluados y la información obtenida de la imagen.
+
+# Si el "Tipo de Elemento" es "Señalización_Horizontal", evalúa si cumple con los siguientes criterios:
+No presenta desgaste, suciedad, agrietamiento en su pintura y su reflectancia es correcta en condiciones de poca luz. En caso de parches, está repintada sin perder la demarcación horizontal. 
+Si cumple con estos criterios de arriba, asigna "Cumple"; de lo contrario, asigna "No cumple".
+
+# Si el "Tipo de Elemento" es "Señalización_Vertical", evalúa si cumple con los siguientes criterios:
+- Está firmemente sujeta a su estructura de soporte y presenta verticalidad perfecta.
+- Su leyenda o símbolo no presenta signos de desgaste y la pintura está en buen estado.
+- Tiene reflectancia correcta y se mantiene libre de polución o suciedad. 
+Si cumple con estos criterios de arriba, asigna "Cumple"; de lo contrario, asigna "No cumple".
+
+# Si el "Tipo de Elemento" es "Elementos_de_Contención_Vial", evalúa si cumple con los siguientes criterios:
+- La integridad estructural es sólida, sin deformaciones o roturas que afecten su funcionamiento.
+- Está correctamente anclada al suelo. 
+Si cumple con estos criterios de arriba, asigna "Cumple"; de lo contrario, asigna "No cumple".
+
+# Si el "Tipo de Elemento" es "Paso_Peatonal", evalúa si cumple con los siguientes criterios:
+- La superficie se encuentra en buenas condiciones, sin grietas, baches o desgaste que provoquen lesiones o caídas.
+- Cuenta con buena accesibilidad (rampas, superficies antideslizantes) y buena demarcación (líneas de detención, zig-zag, advertencia de paso de cebra).
+- Tiene una sincronización adecuada en sus semáforos. 
+Si cumple con estos criterios de arriba, asigna "Cumple"; de lo contrario, asigna "No cumple".
+
+# Agrega un nuevo campo llamado "Estado Físico" al elemento JSON.
+Asigna el valor "Cumple", "No cumple" o "No aplica" al campo "Estado Físico" según los criterios evaluados y la información obtenida de la imagen.
 Genera un nuevo archivo JSON que incluya el elemento original con el campo "Estado Físico" agregado.
+</Reglas>
 
+<Ejemplo>
 Ejemplo de JSON de entrada:
 {
 "Latitud": "S20 58.8237",
@@ -209,6 +223,94 @@ Ejemplo de JSON de salida:
 "Descripci\u00f3n del entorno": "El entorno comprende un paisaje \u00e1rido con vegetaci\u00f3n escasa, monta\u00f1as en la distancia y presencia de l\u00edneas de transmisi\u00f3n el\u00e9ctrica que siguen un trazado paralelo al camino, lo que sugiere una infraestructura de energ\u00eda el\u00e9ctrica.",
 "Estado F\u00edsico": "Cumple"
 }
+</Ejemplo>
 
+"""
+
+prompt_r3 = """
+
+<Objetivo>
+Tu OBJETIVO es devolver un elemento JSON valido, solo devuelve JSON, no otro texto.
+Para el siguiente elemento JSON:
+{$JSON}
+</Objetivo>
+
+<Reglas>
+Debes agregar el campo "Funcionalidad" al elemento JSON de arriba, basándote en el valor del campo "Tipo de Elemento" y la información obtenida de la imagen.
+
+Identifica el valor del campo "Tipo de Elemento".
+Analiza la imagen adjunta para obtener información adicional que pueda ayudar a determinar la Funcionalidad del elemento. 
+
+
+Basándote en el valor del campo "Tipo de Elemento", utiliza los siguientes criterios para determinar si el elemento cumple, no cumple, no aplica o por definir de acuerdo con los siguientes criterios:
+
+# Si el "Tipo de Elemento" es "Sección_Transversal", "Semáforo", "Servicios_Vial", "Zonas_de_Actividades_Complementarias", la funcionalidad siempre se considera como "No aplica".
+# Si el "Tipo de Elemento" es "Acceso", "Alineamiento_Horizontal", "Alineamiento_Vertical", "Elementos_de_Contención_Peatonal" o "Intersección", la funcionalidad siempre se considera como "Cumple".
+
+# Si el "Tipo de Elemento" es "Sistema_De_Energía_Eléctrica", evalúa si cumple con los siguientes criterios:
+- Existe tendido electrico que cruza el camino y esta señalizado correctamente.
+- Existe tendido electrico que no cruza el camino paralelo al mismo, sin o con señalización.
+- El tendido electrico no presenta cables sueltos o en mal estado.
+Si cumple con estos criterios de arriba, asigna "Cumple"; de lo contrario, asigna "No cumple".
+
+# Si el "Tipo de Elemento" es "Señalización_Horizontal", evalúa si cumple con los siguientes criterios:
+Asigna siempre "Por definir".
+
+# Si el "Tipo de Elemento" es "Señalización_Vertical", evalúa si cumple con los siguientes criterios:
+Asigna siempre "Por definir".
+
+# Si el "Tipo de Elemento" es "Elementos_de_Contención_Vial", evalúa si cumple con los siguientes criterios:
+- No tiene daños por impacto de vehículos.
+Si cumple con estos criterios de arriba, asigna "Cumple"; de lo contrario, asigna "No cumple".
+
+# Si el "Tipo de Elemento" es "Paso_Peatonal", evalúa si cumple con los siguientes criterios:
+- La superficie se encuentra en buenas condiciones, sin grietas, baches o desgaste que provoquen lesiones o caídas.
+- Cuenta con buena accesibilidad (rampas, superficies antideslizantes) y buena demarcación (líneas de detención, zig-zag, advertencia de paso de cebra).
+- Tiene una sincronización adecuada en sus semáforos. 
+Si cumple con estos criterios de arriba, asigna "Cumple"; de lo contrario, asigna "No cumple".
+
+# Agrega un nuevo campo llamado "Funcionalidad" al elemento JSON.
+Asigna el valor "Cumple", "No cumple", "No aplica"co "Por definir" al campo "Funcionalidad" según los criterios evaluados y la información obtenida de la imagen.
+Genera un nuevo archivo JSON que incluya el elemento original con el campo "Funcionalidad" agregado.
+</Reglas>
+
+
+<Ejemplo>
+
+Ejemplo de JSON de entrada:
+{
+"Latitud": "S20 58.8237",
+"Longitud": "W68 51.0752",
+"Altitud": "4309 M",
+"Velocidad": "43 km/h",
+"Fecha": "2024/01/21 13:54:34",
+"Carpeta de Rodado": "Pavimento asf\u00e1ltico",
+"Tipo de Elemento": "Elementos_De_Contenci\u00f3n_Vial",
+"Se\u00f1alizaci\u00f3n vial": "No se observan s\u00edmbolos viales cercanos dentro de los 5 metros al costado del camino.",
+"Eventos en ruta": "No se observan eventos anormales en la ruta; el camino est\u00e1 despejado y no hay presencia de personal de trabajo, veh\u00edculos detenidos, ni animales en la ruta.",
+"Estado del camino": "Se observa una carretera con una carpeta de rodado granular, sin pavimento asf\u00e1ltico ni de hormig\u00f3n. Hay algunas irregularidades leves en la superficie y presencia de barreras de contenci\u00f3n a ambos lados del camino.",
+"Descripci\u00f3n del entorno": "El entorno comprende un paisaje \u00e1rido con vegetaci\u00f3n escasa, monta\u00f1as en la distancia y presencia de l\u00edneas de transmisi\u00f3n el\u00e9ctrica que siguen un trazado paralelo al camino, lo que sugiere una infraestructura de energ\u00eda el\u00e9ctrica.",
+"Estado F\u00edsico": "Cumple"
+}
+
+Ejemplo de JSON de salida:
+
+{
+"Latitud": "S20 58.8237",
+"Longitud": "W68 51.0752",
+"Altitud": "4309 M",
+"Velocidad": "43 km/h",
+"Fecha": "2024/01/21 13:54:34",
+"Carpeta de Rodado": "Pavimento asf\u00e1ltico",
+"Tipo de Elemento": "Elementos_De_Contenci\u00f3n_Vial",
+"Se\u00f1alizaci\u00f3n vial": "No se observan s\u00edmbolos viales cercanos dentro de los 5 metros al costado del camino.",
+"Eventos en ruta": "No se observan eventos anormales en la ruta; el camino est\u00e1 despejado y no hay presencia de personal de trabajo, veh\u00edculos detenidos, ni animales en la ruta.",
+"Estado del camino": "Se observa una carretera con una carpeta de rodado granular, sin pavimento asf\u00e1ltico ni de hormig\u00f3n. Hay algunas irregularidades leves en la superficie y presencia de barreras de contenci\u00f3n a ambos lados del camino.",
+"Descripci\u00f3n del entorno": "El entorno comprende un paisaje \u00e1rido con vegetaci\u00f3n escasa, monta\u00f1as en la distancia y presencia de l\u00edneas de transmisi\u00f3n el\u00e9ctrica que siguen un trazado paralelo al camino, lo que sugiere una infraestructura de energ\u00eda el\u00e9ctrica.",
+"Estado F\u00edsico": "Cumple",
+"Funcionalidad": "Cumple"
+}
+
+</Ejemplo>
 
 """
