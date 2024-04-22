@@ -22,7 +22,7 @@ Devuelve un documento JSON con datos despues de analizar la imagen. Sólo devuel
     "Sección_Transversal": "Perfil que muestra la distribución de los distintos componentes del camino a lo ancho.",
     "Semáforo": "Dispositivo de control de tráfico para regular el movimiento de vehículos y peatones.",
     "Señalización_Horizontal": "Marcas viales pintadas sobre la calzada como líneas, símbolos, letras.",
-    "Señalización_Vertical": "Señales de tráfico instaladas en postes a lo largo de las vías.",
+    "Señalización_Vertical": "Señales de tráfico instaladas en postes o paneles a lo largo de las vías.",
     "Servicios_Vial": "Teléfono que está en la carretera.",
     "Sistemas_De_Energía_Eléctrica": "Iluminación y tendido eléctrico presentes en la calzada.",
     "Zonas_De_Actividades_Complementarias": "Áreas o instalaciones que proporcionan servicios adicionales en las vías.",
@@ -32,8 +32,7 @@ Devuelve un documento JSON con datos despues de analizar la imagen. Sólo devuel
     "Elementos_De_Contención_Peatonal": "Barreras para impedir que personas entren a la carretera.",
     "Elementos_De_Contención_Vial": "Barreras para contener y redireccionar vehículos sin control.",
     "Intersección": "Cruce de caminos.",
-    "Paso_Peatonal": "Zonas para el cruce de personas por la ruta.",
-    "Carpeta_De_Rodado": "Capa superior del pavimento."
+    "Paso_Peatonal": "Zonas para el cruce de personas por la ruta."
 },
   "Señalización vial": "VALOR",
   "Eventos en ruta": "VALOR",
@@ -49,7 +48,7 @@ Devuelve un documento JSON con datos despues de analizar la imagen. Sólo devuel
 5.  En el campo "Velocidad" deberas poner un valor numérico en km/h".
 6.  En el campo "Fecha" deberás poner un valor en este formato 2024/01/12 11:20:39".
 7.- En el campo "Carpeta de Rodado" debes devolver solo un elemento de la lista.
-8.- En el campo "Tipo de Elemento" debes devolver solo un elemento del diccionario.
+8.- En el campo "Tipo de Elemento" debes devolver solo un elemento del diccionario, asegurate que sea el que esta mejor descrito en la imagen.
 9.- En el campo "Señalización vial" debes describir en detalle los símbolos viales que se observan al costado del camino (Si el símbolo vial esta lejano, más allá de 5 metros no lo describas).
 10.- En el campo "Eventos en ruta" debes describir en detalle y paso a paso cualquier acontecimiento anormal dentro del camino, incluye en esta descripción una explicación de por qué estaría ocurriendo el evento en particular (personas trabajando por reparación del camino debido a puente roto, vehículo detenido por choque en la carretera, animales en la ruta por cruce de ganadero por el camino, etc).
 11.- En el campo "Estado del camino" "Describe en detalle paso a paso el estado del camino por donde transita el vehículo utiliza (como presencia pavimento, hoyos en el camino, calamina, carpeta rodada, piedras sueltas, irregularidades, etc). 
@@ -157,6 +156,25 @@ Para el siguiente elemento JSON:
 <Reglas>
 Debes agregar el campo "Estado Físico" al elemento JSON de arriba, basándote en el valor del campo "Tipo de Elemento" y la información obtenida de la imagen.
 
+Te dejo una referencia con la descripción de los distintos valores del "Tipo de Elemento" que puedes encontrar arriba en el JSON:
+
+    "Sección_Transversal": "Perfil que muestra la distribución de los distintos componentes del camino a lo ancho."
+    "Semáforo": "Dispositivo de control de tráfico para regular el movimiento de vehículos y peatones."
+    "Señalización_Horizontal": "Marcas viales pintadas sobre la calzada como líneas, símbolos, letras."
+    "Señalización_Vertical": "Señales de tráfico instaladas en postes o paneles a lo largo de las vías."
+    "Servicios_Vial": "Teléfono que está en la carretera."
+    "Sistemas_De_Energía_Eléctrica": "Iluminación y tendido eléctrico presentes en la calzada."
+    "Zonas_De_Actividades_Complementarias": "Áreas o instalaciones que proporcionan servicios adicionales en las vías."
+    "Acceso": "Entrada o salida a una propiedad privada o camino de menor flujo de tránsito.",
+    "Alinamiento_Horizontal": "Giro en la carretera."
+    "Aliniamiento_Vertical": "Indica la inclinación de un camino en subida o bajada."
+    "Elementos_De_Contención_Peatonal": "Barreras para impedir que personas entren a la carretera."
+    "Elementos_De_Contención_Vial": "Barreras para contener y redireccionar vehículos sin control."
+    "Intersección": "Cruce de caminos."
+    "Paso_Peatonal": "Zonas para el cruce de personas por la ruta."
+
+
+
 Identifica el valor del campo "Tipo de Elemento".
 Analiza la imagen adjunta para obtener información adicional que pueda ayudar a determinar el estado físico del elemento. 
 
@@ -237,6 +255,23 @@ Para el siguiente elemento JSON:
 
 <Reglas>
 Debes agregar el campo "Funcionalidad" al elemento JSON de arriba, basándote en el valor del campo "Tipo de Elemento" y la información obtenida de la imagen.
+
+Te dejo una referencia con la descripción de los distintos valores del "Tipo de Elemento" que puedes encontrar arriba en el JSON:
+
+    "Sección_Transversal": "Perfil que muestra la distribución de los distintos componentes del camino a lo ancho."
+    "Semáforo": "Dispositivo de control de tráfico para regular el movimiento de vehículos y peatones."
+    "Señalización_Horizontal": "Marcas viales pintadas sobre la calzada como líneas, símbolos, letras."
+    "Señalización_Vertical": "Señales de tráfico instaladas en postes o paneles a lo largo de las vías."
+    "Servicios_Vial": "Teléfono que está en la carretera."
+    "Sistemas_De_Energía_Eléctrica": "Iluminación y tendido eléctrico presentes en la calzada."
+    "Zonas_De_Actividades_Complementarias": "Áreas o instalaciones que proporcionan servicios adicionales en las vías."
+    "Acceso": "Entrada o salida a una propiedad privada o camino de menor flujo de tránsito.",
+    "Alinamiento_Horizontal": "Giro en la carretera."
+    "Aliniamiento_Vertical": "Indica la inclinación de un camino en subida o bajada."
+    "Elementos_De_Contención_Peatonal": "Barreras para impedir que personas entren a la carretera."
+    "Elementos_De_Contención_Vial": "Barreras para contener y redireccionar vehículos sin control."
+    "Intersección": "Cruce de caminos."
+    "Paso_Peatonal": "Zonas para el cruce de personas por la ruta."
 
 Identifica el valor del campo "Tipo de Elemento".
 Analiza la imagen adjunta para obtener información adicional que pueda ayudar a determinar la Funcionalidad del elemento. 
