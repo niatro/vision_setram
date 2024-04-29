@@ -12,11 +12,11 @@ Devuelve un documento JSON con datos despues de analizar la imagen. Sólo devuel
   "Velocidad": "VALOR",
   "Fecha": "VALOR",
   "Carpeta de Rodado": 
-  [
-    "Pavimento de hormigón",
-    "Pavimento asfáltico",
-    "Granular"
-],
+  {
+    "Pavimento de hormigón": "Presenta marcas viales (lineas pintadas de amarillo o blanco sobre la carpeta), no tiene piedrecillas. Esta superficie está hecha de concreto, es de color GRIS CLARO. Las marcas viales son claramente visibles en esta superficie.",
+    "Pavimento asfáltico": "Presenta marcas viales (lineas pintadas de amarillo o blanco sobre la carpeta), no tiene piedrecillas. Consiste en una superficie de carretera lisa y compacta de color NEGRO, que se torna gris oscuro con el tiempo y el uso. Las marcas viales son muy visibles.",
+    "Granular": "No presenta marcas viales (lineas pintadas sobre la carpeta), tiene piedrecillas y es de color beige o Marron. Está compuesta por una mezcla de grava, arena y pequeñas piedras compactadas, ofreciendo una superficie rugosa e irregular. Sus tonalidades varían generalmente en MARRONES y no tienen marcas viales visibles. Si tiene piedrecillas es granular",
+  },
   "Tipo de Elemento": 
   {
     "Sección_Transversal": "Perfil que muestra la distribución de los distintos componentes del camino a lo ancho.",
@@ -47,7 +47,7 @@ Devuelve un documento JSON con datos despues de analizar la imagen. Sólo devuel
 4.- En el campo  "Altitud" "debera poner un valor numérico en metros (m)".
 5.  En el campo "Velocidad" deberas poner un valor numérico en km/h".
 6.  En el campo "Fecha" deberás poner un valor en este formato 2024/01/12 11:20:39".
-7.- En el campo "Carpeta de Rodado" debes devolver solo un elemento de la lista.
+7.- En el campo "Carpeta de Rodado" debes devolver solo un elemento del diccionario, asegurate que sea el que esta mejor descrito en la imagen. Si no hay marcas viales visibles es Granular.
 8.- En el campo "Tipo de Elemento" debes devolver solo un elemento del diccionario, asegurate que sea el que esta mejor descrito en la imagen.
 9.- En el campo "Señalización vial" debes describir en detalle los símbolos viales que se observan al costado del camino (Si el símbolo vial esta lejano, más allá de 5 metros no lo describas).
 10.- En el campo "Eventos en ruta" debes describir en detalle y paso a paso cualquier acontecimiento anormal dentro del camino, incluye en esta descripción una explicación de por qué estaría ocurriendo el evento en particular (personas trabajando por reparación del camino debido a puente roto, vehículo detenido por choque en la carretera, animales en la ruta por cruce de ganadero por el camino, etc).
@@ -99,7 +99,7 @@ Devuelve un documento JSON con datos despues de analizar la imagen. Sólo devuel
     "Altitud": "4354 M",
     "Velocidad": "37 km/h",
     "Fecha": "2024/01/21 13:52:11",
-    "Carpeta de Rodado": "Granular",
+    "Carpeta de Rodado": "Pavimento de hormig\u00f3n",
     "Tipo de Elemento": "Se\u00f1alizaci\u00f3n_Vertical",
     "Se\u00f1alizaci\u00f3n vial": "Se observa una se\u00f1al de tr\u00e1nsito vertical de advertencia, indicando un zigzag o serie de curvas adelante.",
     "Eventos en ruta": "No se observan eventos anormales en la ruta; el camino se encuentra despejado sin presencia de trabajos, veh\u00edculos detenidos, o animales.",
